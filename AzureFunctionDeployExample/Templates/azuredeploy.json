@@ -60,5 +60,12 @@
       },
       "dependsOn": [ "[resourceId('Microsoft.Web/serverfarms', variables('service_plan_name'))]" ]
     }
-  ]
+
+  ],
+  "outputs": {
+    "functionapp_name": {
+      "type": "string",
+      "value": "[variables('functionapp_name')]"
+    }
+  }
 }
