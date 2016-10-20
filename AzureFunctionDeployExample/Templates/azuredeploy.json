@@ -1,0 +1,64 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "variables": {
+    "service_plan_name": "[concat('plan-', uniqueString(subscription().subscriptionId))]",
+    "functionstorage_name": "[toLower(concat('storage', uniqueString(subscription().subscriptionId)))]",
+    "functionapp_name": "[concat('functionapp-', uniqueString(subscription().subscriptionId))]"
+  },
+  "resources": [
+    {
+      "name": "[variables('service_plan_name')]",
+      "type": "Microsoft.Web/serverfarms",
+      "sku": {
+        "name": "S2",
+        "capacity": 1
+      },
+      "apiVersion": "2015-08-01",
+      "location": "[resourceGroup().location]",
+      "properties": { "name": "[variables('service_plan_name')]" }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('functionstorage_name')]",
+      "apiVersion": "2016-01-01",
+      "sku": { "name": "Standard_LRS" },
+      "location": "[resourceGroup().location]",
+      "kind": "Storage"
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "kind": "functionapp",
+      "name": "[variables('functionapp_name')]",
+      "apiVersion": "2015-08-01",
+      "location": "[resourceGroup().location]",
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "name": "appsettings",
+          "type": "config",
+          "dependsOn": [ "[concat('Microsoft.Web/Sites/', variables('functionapp_name'))]" ],
+          "properties": {
+            "Example_Custom_AppSetting": "...",
+
+            "FUNCTIONS_EXTENSION_VERSION": "~0.6",
+            "AZUREJOBS_EXTENSION_VERSION": "beta",
+
+            "AzureWebJobsDashboard": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('functionstorage_name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('functionstorage_name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
+            "AzureWebJobsStorage": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('functionstorage_name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('functionstorage_name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"
+          }
+        }
+      ],
+      "properties": {
+        "name": "[variables('functionapp_name')]",
+        "hostNames": [ "[concat(variables('functionapp_name'),'.azurewebsites.net')]" ],
+        "enabledHostNames": [
+          "[concat(variables('functionapp_name'),'.azurewebsites.net')]",
+          "[concat(variables('functionapp_name'),'.scm.azurewebsites.net')]"
+        ],
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('service_plan_name'))]"
+      },
+      "dependsOn": [ "[resourceId('Microsoft.Web/serverfarms', variables('service_plan_name'))]" ]
+    }
+  ]
+}
