@@ -1,10 +1,15 @@
 ﻿{
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
+  "parameters": {
+    "functionapp_name": {
+      "type": "string"
+    }
+  },
   "variables": {
     "service_plan_name": "[concat('plan-', uniqueString(subscription().subscriptionId))]",
     "functionstorage_name": "[toLower(concat('storage', uniqueString(subscription().subscriptionId)))]",
-    "functionapp_name": "[concat('functionapp-', uniqueString(subscription().subscriptionId))]"
+    "functionapp_name": "[parameters('functionapp_name')]"
   },
   "resources": [
     {
@@ -61,11 +66,5 @@
       "dependsOn": [ "[resourceId('Microsoft.Web/serverfarms', variables('service_plan_name'))]" ]
     }
 
-  ],
-  "outputs": {
-    "functionapp_name": {
-      "type": "string",
-      "value": "[variables('functionapp_name')]"
-    }
-  }
+  ]
 }
