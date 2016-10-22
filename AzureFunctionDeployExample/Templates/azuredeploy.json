@@ -9,7 +9,8 @@
   "variables": {
     "service_plan_name": "[concat('plan-', uniqueString(subscription().subscriptionId))]",
     "functionstorage_name": "[toLower(concat('storage', uniqueString(subscription().subscriptionId)))]",
-    "functionapp_name": "[parameters('functionapp_name')]"
+    "functionapp_name": "[parameters('functionapp_name')]",
+    "storage_connectionstring": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('functionstorage_name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('functionstorage_name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"
   },
   "resources": [
     {
@@ -49,8 +50,8 @@
             "FUNCTIONS_EXTENSION_VERSION": "~0.6",
             "AZUREJOBS_EXTENSION_VERSION": "beta",
 
-            "AzureWebJobsDashboard": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('functionstorage_name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('functionstorage_name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
-            "AzureWebJobsStorage": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('functionstorage_name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('functionstorage_name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"
+            "AzureWebJobsDashboard": "[variables('storage_connectionstring')",
+            "AzureWebJobsStorage": "[variables('storage_connectionstring')"
           }
         }
       ],
