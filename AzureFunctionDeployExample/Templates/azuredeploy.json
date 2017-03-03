@@ -48,7 +48,6 @@
             "Example_Custom_AppSetting": "...",
 
             "FUNCTIONS_EXTENSION_VERSION": "~0.6",
-            "AZUREJOBS_EXTENSION_VERSION": "beta",
 
             "AzureWebJobsDashboard": "[variables('storage_connectionstring')",
             "AzureWebJobsStorage": "[variables('storage_connectionstring')"
