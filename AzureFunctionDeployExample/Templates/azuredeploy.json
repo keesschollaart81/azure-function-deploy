@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
@@ -9,8 +9,7 @@
   "variables": {
     "service_plan_name": "[concat('plan-', uniqueString(subscription().subscriptionId))]",
     "functionstorage_name": "[toLower(concat('storage', uniqueString(subscription().subscriptionId)))]",
-    "functionapp_name": "[parameters('functionapp_name')]",
-    "storage_connectionstring": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('functionstorage_name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('functionstorage_name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"
+    "functionapp_name": "[parameters('functionapp_name')]"
   },
   "resources": [
     {
@@ -49,8 +48,8 @@
 
             "FUNCTIONS_EXTENSION_VERSION": "~0.6",
 
-            "AzureWebJobsDashboard": "[variables('storage_connectionstring')",
-            "AzureWebJobsStorage": "[variables('storage_connectionstring')"
+            "AzureWebJobsDashboard": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('functionstorage_name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('functionstorage_name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
+            "AzureWebJobsStorage": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('functionstorage_name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('functionstorage_name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"
           }
         }
       ],
